@@ -12,6 +12,17 @@ public:
         cout << "Costruttore della classe Base con x = " << x << endl;
     }
 
+    //quando si ridefinisce un operatore il parametro in inglesso è sempre const type reference
+    //----------------------il costruttore di copia deve essere const type reference perche la copia non deve cambiare l oggetto quindi Base0(const Base& b ){}
+     Base0(const Base0& b ){
+        //campo=b->campo prendo dall esterno e popolo me stesso
+        //ecc
+     }
+     //se non si vuole permettere la duplicazione basta dichiarare privato il costruttore di copia
+     //quando si assegna un oggetto si suppone l esistenza del ogetto da assegnare e quindi bisogna anche cancellare quello che c'è dentro prima di procedere assegnando
+     // se viene definito anche solo uno della terna: costruttore di copia, operatore di assegnazione e distruttore OCCORRE definire gli altri 2
+
+
     virtual void stampa0(){
         //virtual si propaga a tutta la gerarchia quando una classe eredita da due classi base con metodo stampa0 virtuale
         //come nel caso Base, Base0 quando il metodo viene invocato dal main sara selezionato il metodo corretto in funzione
@@ -30,6 +41,9 @@ class Base{
 //in una classe se non esplicitato public è sempre private
 public:
     string a="123";
+
+    //Base(Base && sorgente){} //costruttore di movimento
+
 
     virtual void stampa0(){//virtual si propaga a tutta la gerarchia quidni il metodo sarà sempre polimorfico
         cout<< a << endl;
@@ -239,16 +253,50 @@ int main()
     //operator=, aumenta il contatore
     //reset() ??
 
-    //make_shared<>()
+    //make_shared<>() lo si puo usare anche con tipi primitivi locali tipo int. il metodo garantisce una allocazione sullo heap
     // 51:03
 
     //- std::weak_ptr<type> permette di osservare il contenuto di uno shared_ptr
 
     //- std::unique_ptr<type> esiste un solo puntatore se lo passo ad un altro io mi distruggo
 
+    // std::make_shared<base>(params...) prende dei parametri del costruttore e istanzia un oggetto base e lo restituisce
+
+    // std::auto_ptr<base> vecchio prima del 2011 trasferisce la proprietà ad un altro puntatore e mette a null il puntatore corrente ma questo cambi ail puntatore di partenza e questo non va bene
+
+    // PROBLEMA: su uno shared pointer non bisogna mai chiamre esplicitamente delete ma aspettare che il contatore tocchi lo zero.
+    //in un caso del tipo:
+
+    // class A {
+    // public:
+    //     std::shared_ptr<B> b_ptr;
+    //     ~A() { std::cout << "Distruttore di A chiamato\n"; }
+    // };
+    // class B {
+    // public:
+    //     std::shared_ptr<A> a_ptr;
+    //     ~B() { std::cout << "Distruttore di B chiamato\n"; }
+    // };
+    //
+    // int main() {
+    //     std::shared_ptr<A> a = std::make_shared<A>();
+    //     std::shared_ptr<B> b = std::make_shared<B>();
+    //     a->b_ptr = b;
+    //     b->a_ptr = a;
+    // }
+
+    //il contatore non tocca mai lo zero. a causa del fatto che la classe non elimina il suo shared pointer ma l unico motivo di rilascio risorse è legato al contatore.
+    //per questo si utilizzano i weak_ptr che è gestito da shared ptr ma non viene contato. Un std::weak_ptr può essere "promosso" (con il metodo lock()) a uno std::shared_ptr temporaneo
+    //(aumentando temporaneamente il conteggio dei riferimenti) per accedere in modo sicuro all'oggetto, se questo esiste ancora (si controlla con il metodo expired()).
+    //cosi si risolve il problema del ciclo usando in uno dei due riferimenti uno weak_ptr
 
 
-    cout << "REFERENCE-POINTER"<<endl;
+    // unique_ptr non puo essere ne copiato ne assegnato non si da a nessuno. puo essere esplicitamente trasferito usando il metodo move()(da approfondire per capire come possa essere ritornato da una funzione).
+    //supponendo di essere unico possessore della memoria se viene eliminato rilascia la memoria.
+    //
+    // make_unique similmente a quanto avviene per shared crea nello heap un oggetto e restituisce il puntatore unique.
+
+    cout << "REFERENCE-POINTER differenze"<<endl;
     //Puntatori
     //Sintassi: Un puntatore è dichiarato usando un asterisco (*) nella sua dichiarazione. Ad esempio: int* ptr;
     //Indirizzamento: Un puntatore contiene l'indirizzo di memoria di un'altra variabile. Può essere modificato per puntare a un'altra variabile in qualsiasi momento.
@@ -262,22 +310,228 @@ int main()
     //Nessun Valore Nullo: Un riferimento deve essere inizializzato al momento della dichiarazione e non può essere nullo. Non esiste un "riferimento nullo" in C++ standard.
     //Nessuna Aritmetica: Non si può fare aritmetica con i riferimenti.
 
-    // explicit, inline, const, volatile, slicing, const noexcept override
 
 
+    cout << "FRIEND:"<<endl;
+    //i campi privati on possono essere visti all esterno della classe stessa tuttavia è possibile dichiarare friend altre classi o funzioni per permettergli
+    //di accedere ai campi private.
+
+    //void func(A &a){a.datoprivato = 1;}
+    //class ClasseA {
+    //    friend class ClasseB; // Dichiarazione di amicizia
+    //    friend void func(A&);
+    //private:
+    //    int datoPrivato;
+    //public:
+    //    ClasseA() : datoPrivato(42) {} // Costruttore che inizializza datoPrivato
+    //};
+    //class ClasseB {
+    //public:
+    //    void mostraDatoPrivatoDaA(const ClasseA& a) {
+    //        // Accesso diretto al membro privato di ClasseA grazie alla friendship
+    //        std::cout << "Dato privato di ClasseA: " << a.datoPrivato << std::endl;
+    //    }
+    //};
+
+    //int main() {
+    //    ClasseA a;
+    //    ClasseB b;
+    //    b.mostraDatoPrivatoDaA(a); // Mostra: Dato privato di ClasseA: 42
+    //    return 0;
+    //}
+
+
+
+    // un metodo definito const non modifica lo stato dell oggetto se const è abbinato ad un reference permette di evitare la copia tenendo immutato l oggetto passato
+    // override serve a specificare che si fa un override e quindi il compilatore eseguirà un marching dei tipi
+    // noexcept dice al compilatore che una funzione non lancerà eccezioni questo permette al compilatore di ottimizzare meglio il codice perche sa di non dover gestire eccezioni
+    //slicing per slicing si intende la copia di qualcosa in uno spazio piu piccolo che è consentita senza problemi ma non viene tutto effettivamente copiato ma solo la parte che ci entra con la conseguente perdita di informazione
+
+
+    // explicit, inline, volatile,
 
 
     // iteratori
+    //1:02:13
+
+    //ce una classe operator per ogni tipo come  std::vector<int>::iterator ,  supporta ++ e -- punta sempre ad un elemento della collezione su puo vedere anche se punta allo stesso elemento o no con ==,  !=, begin() gli iteratori possono essere validi o non end()primo elemento fuori lista, iteratore non valido
+    //si puo cancellare un elemento iterando ma bisogna farlo dall iteratore non dalla lista . tipo il metodo erase accetta un iteratore come parametro.
+
+    // std::vector<int> myVector = {1, 2, 3, 4, 5};
+    // for (auto it = myVector.begin(); it != myVector.end(); /* not incrementing here */) {
+    //     if (*it == 3) {
+    //         it = myVector.erase(it); // Cancella l'elemento e sposta l'iteratore all'elemento successivo
+    //     } else {
+    //         ++it; // Incrementa solo se non cancelli
+    //     }
+    // }
+
+    //esisite il metodo remove_if che prende una funzione che se ritorna true cancella l elemento se ritorna false invece no. questi si chiamano funzionali e non funzioni.
+    // anche il metodo sort ordina ascendente per default o prende in ingresso un funzionale che definisce il criterio di ordinamento
+    // il metodi splice toglie elementi dal primo contenitore e li mette nel scondo passato come argomento
+    // unique toglie i duplicati adiacenti quindi se si fa prima sort e poi unique si tolgono tutti.
+    //essendo i contenitori come le mappe ordinati non è possibili costruirne una di un tipo custom senza ridefinire l' operatore minore. bisogna inoltre garantire la copia e l' assegnazione
+
+
+    cout << "PUNTATORI A FUNZIONE: "<<endl;
+
+    // sintassi <tipo_ritornato>(*var )(<argomenti>)
+    // assegnamento int f(int i, double d){ .. .. }
+    // int (*var)(int,double);
+    // var = f;
+    // var = &f; identico al precedente
+    // var(10,3.48);
+    // (*var)(10,3.48); identico al precedente
+
+    // il match dei tipi deve essere perfetto anche se ci sono parametri di default va specificato il tipo perche i parametri di default sono sempre parametri passati alla funzione.
+
+    // FUNCTIONAL OBJECT
+
+    //è un oggetto con ridefinito l' operatore operator()
+    // class FC{
+    // public:
+    //     int operator() (int v){
+    //         return v*2;
+    //     }
+    // };
+
+    //posso usare FC come una funzione :
+
+    // FC fc; costruttore a cui potrei passare cose
+    // int i = fc(5); fc gia costruito cosi chiamato chiamo la funzione definita nell operatore
+    // // vale 10
+
+    //anche operator() puo essere overloaded
+    //se all oggetto metto dei campi privati posso definire un funzione risponda in funzione di uno stato interno nascosto
+    // è possibile contare quante volte viene invocata una funzione!
+
+    // usando i template
+    //  è possibile scrivere
+    //  template <typename F>
+    //  void some_function(F& f){
+    //      f(); // f puo essere sia un funzionale che un puntatore a funzione
+    //  }
+    // in entrambi i casi la riga f(); sarà risolta nel casi puntatore a funzione come invocazione della funzione puntata
+    // in caso di oggetto funzionale come chiamata all operator() ridefinito aumentando la generalità dell espressione
+    // il remove if quindi può prendere un oggetto funzionale o una funzione oppure si po fare l overload e dire remove if e si da un valore intero da rimuovere
+
+    // ESPRESSIONI LAMBDA
+
+    // la labda è un espressione sintattica che semplifica la creazione di un oggetto funzionale
+    // uno dei vantaggi è che non abbiamo dovuto dare un nome alla funzione
+    // foreach(v.begin(),v.end(), funzionale ); il funzionale puo essere rimpiazzato da una labda
+    // foreach(v.begin(),v.end(), [](int t) -> string { count<<i; return "finito";} )
+
+    // se il valore di ritorno non si specifica il controllo del compilatore non viene fatto ma è lecito ritornare a patto di non ritornare cose diverse a secondo di un if tipo ecc
+    // se nelle quadre della labda non si mette niente le funzioni lambda definite sono alla pari di comuni funzioni
+    // se nelle quadre invece si aggiungono delle variabili è possibile renderle disponibili nel corpo della funzione
+
+    // attenzione a chiamare una labda quando i referece passati non sono piu disponibili peche magari le funzioni sono state distrutte
+
+    //posso passare:
+    // variabili [a,b,c]
+    // reference a variabili [&a,&b,&c]
+    // [=] cattura tutto per valore
+    // [&] cattura tutto per riferimento
+
+    // COPIA E MOVIMENTO
+    // la copia è in cotrasto con l idea di prestazioni elevate
+    // se un oggetto non mi serve piu e lo voglio copiare a qualcuno posso passarne la proprietà invece di copiare e poi cancellarlo
+    // se io ho una lista che popolo in una funzione e poi la voglio ritornare perche copiarla? meglio spostarla
+    // espressioni temporanee come f(3+i) f(string("ciao")) il parametro passato non ha senso copiarlo (oggetti anonimi in generale)
+
+    //il movimento è utile anche perche alcuni oggetti sono effettivamente non copiabili come uno unique_ptr che non è copiabile ma è muovibile e quindi puo ritornare da una funzione
+    // per fare il movimento è necessario un costruttore di movimento.
+    //Base(Base && sorgente){}
+    //il c++ non genenra un costruttore di movimento di default perche non sa come è fatta la nostra classe
+    // se il dato è un Rvalue o un Lvalue expired detto Xvalue allora il compilatore muove invece di copiare
+    // string&& è un Rvalue reference che NON è un riferimento ad un riferimento
+
+    //quando viene chiamata un afunzione il compilatore alloca spazio per il return prima dell invocazione quando si ritorna copia e distrugge le variabili locali
+    // questa operazione puo essere semplificata chiamnado il costruttore di movimento che invece di distruggere l oggetto copiato lo smonta e quanto al suo interno viene
+    // passato
+
+    //esempio costruttore di movimento prendo dall oggetto passato e lo setto a null
+    // simple_string(simplestring&& that){
+    // data = that.data
+    // that.data= NULL;
+    // }
+    // evita la copia in profondità
+    // quando questo succede:
+
+    //b(a+x)
+    //b(funcCheRitorna())
+
+    //alcuni oggetti non sono copiabili ma movibili
+    // copiare un intero o muoverlo è piu o meno la stessa cosa quindi non ha senso muoverlo forse dannoso
+
+    // tabellina Rvalue Lvalue 24:41 lezione 9
+    // Lvalue è riferito a un qualcosa che ha un indirizzo fisico di memoria
+    // Rvalue è il risultato temporaneo di un espressione che sta per essere cancellato
+
+    //la tabella mostra in funzione del tipo di parametro passato alla funzione quale argomenti la funzione può ricevere intermini di Rv o Lv ecc
+
+    // una funzione che prende in inglesso un Const Type Reference può potenzialmente prendere in ingresso qualsiasi cosa sia Rvalue che Lvalue cost o non
+    // invece una funzione Type Rvalue Reference solo oggetti di tipo Rvalue quindi se l' oggetto a destra dell uguale è un Rvalue teoricamente è possibile chiamare sia il costruttore di copia che di movimento
+    // lo standard prevede che in tal caso si chiami il costruttore di movimento se disponibile altrimenti quello di copia
+
+
+    // Si parla quindi di costruzione per movimento ma lo stesso problema esiste anche nel caso
+    //dell assegnazione tuttavia questo provoca un comportamento simile a quello del distruttore piu altre operazioni per il movimento con duplicazione di codice o comunque problemi di manutenzione
+
+    // Per risolvere questo problema nasce un paradigma denominato Copy&Swap
+    // se si fa una funzione extra che chiamiamo swap fuori dalla classe da copiare ma sua friend in modo che possa accedere ad ogni suo campo
+    // è possibile rendere il costruttore di copia l' unico responsabile della copia anche quando si fa l'assegnazione e trasformare l' assegnazione in movimento
+    // a seconda dei casi in cui è possibile fare lo spostamento o no.
+    // ovviamente bisognerà definire pure il costruttore di movimento.
+
+    //dunque fatta la funzione swap si scrive l'operatore di assegnazione che prende un parametro passato epr valore
+    //all interno si esegue lo swap.
+    //il parametro passato verrà copiato dall costruttore di copia e passato come copia all oggetto che dopo aver scambiato i riferimenti propri con quelli dell
+    //oggetto in questione ritornerà distruggendo l' oggetto copiato.
+    //se l'oggetto originale passato alla funzione è un Rvalue Reference e queindi sta per morire anche il passaggio dell' argomento all operatore di assegnazione
+    //avverrà per movimento e non per copia garantendo un duplice comportamento nel caso dell uso dell operatore di assegnazione
+    //il costruttore di movimento invece viene invece normalmente definito.
+    //
+    //
+    //// funzione esterna da dichiarare friend della classe che si intende supportare
+    //void swap(intArray& a,intArray& b) {
+    //    std::swap(a.mSize, b.mSize);
+    //    std::swap(a.mArray, b.mArray);
+    //}
+    //
+    //intArray& operator=(intArray that){
+    //    //that è passato per valore,
+    //    //copiato o mosso a seconda del
+    //    //contesto in cui è usato
+    //
+    //    swap(*this, that);
+    //    return *this;
+    //}
+    //
+    ////costruttore di movimento
+    //intArray(intArray&& that): // notare che il parametro non è const perche il costruttore di movimento deve poter motificare l oggetto passato
+    //    mSize(0), mArray(NULL)  // azzero le mie risorse e poi faccio swap
+    //{
+    //    swap(*this, that);
+    //}
+    //swap corrisponde alla funzione assembler exchange che è molto veloce
+    // se lo volessimo fare manualmente occorre allocare sullo stack che non costa molto ma va fatto
+
+    //esiste la funzione move che promuove l oggetto ad Rvalue e quindi alla possibilità di essere svuotato e lo restituisce
+
+    //v.push_back(str) in questo caso str viene copiato nel vettore e continua ad esserci copia in str
+    //v.push_back(std::move(str)) in questo caso str si svuota e non avviene la copia
+
+
     // threads
 
+    // IO << <<
     // costruttore di copia
     // ridefinizione degli operatori
-    // puntatori a funzione
-    // funzioni
     // template
     // il tipo void
     // qualcosa in piu sulla vtable magari dal libro
-    // quali problemi comporta mettere privato il costruttore di copia ?
     //se il costruttore di copia e l operatore di assegnazione sono privati la copia non si fa.
 
     //SOLID
