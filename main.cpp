@@ -313,6 +313,7 @@ int main()
 
 
     cout << "FRIEND:"<<endl;
+    //le funzioni friend devono esistere nel codice prima di essere definite friend
     //i campi privati on possono essere visti all esterno della classe stessa tuttavia è possibile dichiarare friend altre classi o funzioni per permettergli
     //di accedere ai campi private.
 
@@ -385,7 +386,7 @@ int main()
 
     // il match dei tipi deve essere perfetto anche se ci sono parametri di default va specificato il tipo perche i parametri di default sono sempre parametri passati alla funzione.
 
-    // FUNCTIONAL OBJECT
+    cout << "FUNCTIONAL OBJECT" << endl;
 
     //è un oggetto con ridefinito l' operatore operator()
     // class FC{
@@ -415,7 +416,7 @@ int main()
     // in caso di oggetto funzionale come chiamata all operator() ridefinito aumentando la generalità dell espressione
     // il remove if quindi può prendere un oggetto funzionale o una funzione oppure si po fare l overload e dire remove if e si da un valore intero da rimuovere
 
-    // ESPRESSIONI LAMBDA
+    cout << "ESPRESSIONI LAMBDA" << endl;
 
     // la labda è un espressione sintattica che semplifica la creazione di un oggetto funzionale
     // uno dei vantaggi è che non abbiamo dovuto dare un nome alla funzione
@@ -434,7 +435,7 @@ int main()
     // [=] cattura tutto per valore
     // [&] cattura tutto per riferimento
 
-    // COPIA E MOVIMENTO
+    cout << "COPIA E MOVIMENTO" << endl;
     // la copia è in cotrasto con l idea di prestazioni elevate
     // se un oggetto non mi serve piu e lo voglio copiare a qualcuno posso passarne la proprietà invece di copiare e poi cancellarlo
     // se io ho una lista che popolo in una funzione e poi la voglio ritornare perche copiarla? meglio spostarla
@@ -523,8 +524,105 @@ int main()
     //v.push_back(str) in questo caso str viene copiato nel vettore e continua ad esserci copia in str
     //v.push_back(std::move(str)) in questo caso str si svuota e non avviene la copia
 
+    cout << "PROGRAMMAZIONE CONCORRENTE" << endl;
 
-    // threads
+    //la concorrenza ha senso solo se il problema è parallelizzabile
+    //ha senso se devo fare operazioni tipo IO (su disco tipo) che comportano attese e nel mentre si puo continuare la computazione
+    //questo si puo fare anche con 2 processi ma comporta una comunicazione interprocesso che è onerosa
+    //In C++ un programma classico è di tipo sequenziale e inizia dove viene definita la prima variabile globale e poi si esegue il main e termina con la distruzione dell ultima variabile globale
+    // ha un comportamento deterministico a parità di ingresso si fa sempre la stessa cosa. l OS garantisce l isolamento in memoria allo stesso indirizzo virtuale 10 corrispondono diversi indirizzi reali
+
+    //La programmazione concorrente parte quando nello stesso spazio di indirizzamento allo scopo di risolvere lo stesso problema 2 o piu flussi di esecuzione vengono eseguiti ogni uno fa cose diverse
+    // i programmi partono tutti con lo stesso thread principale poi questi lancia altri thread che vengono eseguiti nello stesso spazio di indirizzamento quindi l indirizzi per un thread corrisponderanno algi stessi indirizzi per gli altri thread
+    //Quando un programma multi thread viene eseguito il risultato non diventa dipendente solo dalgi ingressi ma anche da tanti altri fattori indiendenti
+    // perche l'avantamento dei thread non è deterministico
+
+    //ad ogni thread il sistema operativo associa una struttura dati protetta nel kernel dove si scrive a cosa è arrivato il thread per gestire il contex swithch
+
+    //occorre sincronizzare i thread
+
+    // problemi di sincronizzazione:
+    //- deadlock(io aspetto te tu aspetti me),
+    //- livelock(continuo finche tu non dici basta ma se tu non mi dici basta perche non riesci io continuo all infinito),
+    //- starvation(qualcun altro ha sempre prioritàe passa sempre prima e io non faccio nulla)
+    //- ECC
+
+    // fino al c++ 2011 bisognava create i thread differentemente per ogni sistema operativo
+
+    // lettura mentre si scrive
+    // lettura contemporanea e scrittura che sovrascrive
+
+    // il problema della propagazione dei dati fra le cache è gestito con le fence-barriere
+    // l assembler dei sistemi multi core hanno istruzioni barriera che quando si vuole che altri vedano i dati forzano il flush della cache. bloccano i processori scaricano la cache e riprendono
+    // queste istruzioni sono diverse fra i diversi processori
+    // la barriera e quindi la sincronizzazione è costosa e rallenta l' esecuzione
+    //in caso intel x86 esistono diverse istruzioni barriera
+    //    -mfence full memory fence
+    //    -sfence store fence nessuno scrive piu finche non si sincronizza qunato scritto
+    //    -lfence load fence nessuno legge finche non viene sincromnizzata la lettura
+
+    // processori e compilatori possono fare la speculative processing ovvero possono scambiare le istruzioni che non cambiano nulla dal punto di vista del programma tipo 2 scritture.
+
+    //oltre i problemi classici i processori multi core per ogni core hanno delle cache quindi il dato puo diventare visibile al sistema anche tempo dopo la sua effettiva computazione
+    //per regolare la sincronizzazione fra cache e ram esistono delle istruzioni di fence nell assembler che sono incorporate nelle istruzioni di sincronizzazione del c++
+    // per alcune operazioni è comodo tenere un informazione in un registro ma bisogna tenere a mente che così facendo il resto del sistema non la vede l ottimizzazione del
+    // compilatore si puo disattivare usando la keyword volatile che è utile solo per le variabili condivise (se no si perde solo del tempo )
+    // volatile non ha alcun effetto sul sottosistema di cache semplicemente evita che il compilatore ottimizzi (tenga  la variabile in un registro per esempio)
+    // usare volatile non basta perche questi non agiscono sui memory fence quindi bisogna per forza usare i costrutti del c++ per la sincronizzazione
+
+
+    //esistono due metodi per scrivere programmi concorrenti uno di alto livello che si chiama std::async basato sulla copia e sugli oggetti std::future
+    //se questi non sono sufficienti ci sono altre classi che permettono di manipolare i thread a basso livello come la classe thread, mutex, condition variable, atomic
+
+
+    //async e future si puo usare quando i c'è il thread principale che crea altri thread con compiti distinti e indipendenti e raccoglie i risultati finali se il lavoro di un thread diventa interdipendente dal lavoro
+    //degli altri thread allora non basta piu e bisogna usare le classi di manipolazione dei thread
+
+    //async prende in ingresso un oggetto callable quindi un funzionale o puntatore a funzione e anche i suoi parametri. Async restituisce un oggetto future
+    // l oggetto future ha un metodo get con cui è possibile avere il valore di ritorno del thread se pronto oppure và in blocco finche il thread non termina o lancia un eccezione.
+    // se l oggetto è morto con un eccezione allora lancia l' eccezione alla chiamata di get
+    // se non ha iniziato forza l esecuzione.
+    //future avrà il tipo do ritorno nella definizione
+    // la chiamata a get funge anche da sincronizzatore contiene un memory fence
+
+    //async puo essere chiamato con diverse modalità che indicano come dovrà essere eseguito.
+
+    //- std::launch::async -> crea un thread che la svolga
+    //possibile che il systema non abbia risorse per creare un thread e quindi ritorna un eccezione
+
+    //- std::launch::deferred -> crea l oggetto ma mettilo da parte se non faccio la get non lo fare e chi fa get esegue il codice
+
+    //creare dei thread costa bisogna allocale risorse quindi non si puo creare un thread per ogni cosa
+    // agoritmo somma con thread  reg11 : 1:11:00
+
+    //quando si chiama get il valore ritorna one shot se si vuole solo controllare se sia pronto o meno si puo chiamare wait che aspetta che il thread termini senza prelevarne il valore
+
+    // esistono anche altre funzioni come
+    //- wait_for: aspetta un tempo fissato in millisecondi e poi se il dato è pronto ritorna true e false altrimenti (std::chrono::duration)
+    //- wait_until: aspetta fino ad un orario precisato (std::chrono::timepoint)
+
+    //restituiscono:
+    //- std::future_status::deferred se non ancora partita
+    //- std::future_status::ready se il risultato è pronto
+    //- std::future_status::timeout se il tempo è scaduto ma il risultato non è tornato
+
+    // se si chiama wait su un thread creato con modalità deferred il thread che ha chiamato wait esegue le istruzioni messe nel oggetto deferred
+    // wait_for e wait_until non lanciano nulla se chiamati su un deferred
+
+    // se il thread è in esecuzione e si cerca di distruggere future il distruttore chiama la wait e attende che questi torni il future aspetta sempre il ritorno
+    // quindi NON é POSSIBILE STOPPARE UN ESECUZIONE FATTA IN UN OGGETTO FUTURE
+    //reg 11 1:24:00
+
+
+
+
+
+
+
+
+
+
+
 
     // IO << <<
     // costruttore di copia
