@@ -614,10 +614,67 @@ int main()
     //reg 11 1:24:00
 
 
+    //è possibile che il risultato di un thread riportato nel metodo future debba esser consultato piu di una volta a tal scopo è possibile farsi restituire un oggetto shared_future
+    //lo shared future è piu oneroso ma puo essere usato e copiato nvolte e tutte mantengono il riferimento all oggetto originale. quando su un oggetto future si chiama il metodo share()
+    //questo restituisce uno shared future e l oggetto stesso diventa invalido da questo momento sara usato solo lo shared future
 
+    //shared future è copiare e movibile e offre gli stessi metodi di future
 
+    //uno shared_future puo servire per creare catene di esecuzioni:
 
+    //->> si esegue un thread e si ritorna lo shared_future che si passa ad altri due che quando avranno bisogno del valore preso dall oggetto future chiameranno la get() su di esso
+    //    reg12 08:57 schemino
 
+    //se il programma fa computazione pesante inutile fare tanti thread perche quelli in esecuzione sono nel numero dei processori fisici.
+    //se invece si fa tanto i/o puoavere unsenso avere molti thread per passimizzare la computazione e quelliche sono inattesa attendono l i/o
+
+    //per creare un thread con la classe thread, si passa al construttore di thread un oggetto callable come un puntatore a funzione ecc
+    //    std::thred t(<funzionale>);
+    //e il thread parte subito oltre all oggetto callable se aggiungo altri parametri per VALORE questi vengono passati all oggetto callable. anche l oggetto callable è passato per VALORE
+    //ad una certa bisogna per forza chiamare join sul thread creato per aspettare in modo bloccante la sua terminazione. chiamare join inoltre libera le risorse del thread
+    // si può forzare il passaggio per reference con std::ref(<oggetto>) che in realtà è un passagio per valore ma questo valore è un reference e quindi è come passare per reference
+    // in realtà si puo passare un puntatore e bisogna però gestirne il ciclo vita perche in questo caso l uscita dallo scope non cancellerà l oggetto
+
+    // delle volte come in un webserver forse è meglio creare subito 100 thead e usarli a rotazione invece di crearne uno per richiesta.
+    // questa tecnica prende il nome di thread pooling. si prende un thread che non sta facendo niente e gli si assegna un compito. questo non
+    // termina a fine compito ma resta attivo notificando la fine delle operazioni egli assegnate. Questo approccio evita l onere di creare
+    // ogni volta un thread.
+    // Ad un thread è possibile passare una lambda. La labda ha la possibilità di catturare il contesto di esecuzione questo è un problema
+    // nel caso un thread è chiamato dentro una funzione che però termina cancellando le variabili catturate dal thread che farebbe accesso
+    // tramite il sudetto reference a qualcsoa di indefinito. ma anche se il contesto fosse ancora valido ciò comporterebbe comunque i classici
+    // problemi di sincronizzazione fra lettue e scritture dentro e fuori il thread
+
+    // usare thread invece di async non permette di selezionare politica la chiamat a acostruttore di thread fa partire un thread se ci sono risorse
+    // se non ci sono lancia un eccezione
+    // thread non torna un valore ma torna solo void. L unica cosa che so di un thread è che ha un nome univoco che si ottiene chiamndo get_id()
+    // se un eccezione si verifica nel thread e nessuno fa il catch muore tutto il processo
+
+    // se non invochiamo join possiamo invocare detach() sul thread e questo andrà per i fatti suoi e noi perderemo ogni contatto ma comunque se il thread principale termina fa terminare pure questi thread detached
+
+    // è possibile muoreve un thread dentro un altro per movimento scaricando la responsabilità dello stesso su un altro thread
+    // se per caso il distruttore di thread viene invocato esso fa terminare tutta l' esecuzione quindi è da evitare
+    // se il thread principale termina gli altri terminano forzatamente anche se sono detached
+
+    //se ho bisogno del risultato finale di un thread usare async e future va bene se ho bisogno di risultati intermedi invece ho bisogno di
+    //una variabile condivisa ma come la gestisco ?
+
+    //il modo migliore di gestire un valore restituito da un thread è usare un oggeto di tipo std::promise esso si puo riempire con un informazione con set_value e ritorna un oggetto future con il metodo get_future()
+    // sul quale è possibile interrogare se il valore è pronto o non ancora
+    //reg 12 40:18 restituzione di valori parziali
+
+    // se un thread termina per cause non naturali si invoca exit
+    // std::exit fa terminare il thread principale e uscire dal processo quindi esce dal main e distrugge le variabili globali
+    // std::quick_exit che non chiama il distruttore delle variabili globali
+
+    //l uso di promise permette di sincronizzare e quindi migiora la situazioen dei thread detached.
+    //è possibile per un promise associare il valore alla fine di un thread in modo da aspettare comunque la terminazione del thread detached
+    //cio si fa con la funzionce set_value_at_thread_exit(T val) set_exception_at_thread_exit(T val) ma di nuovo questo maschera i risultati intermedi
+
+    //è possibile ottenenre l identificativo del thread corrente usando std::this_thread::get_id()
+    // std::this_thread::sleep_for(<duration>) viene messo in stato wait e poi in ready in attesa di essere schedulato ed eseguito
+    // std::this_thread::sleep_until(<duration>) fino a momemto preciso
+    // yield() mi rimento in wait e faccio passare avanti gli altri
+    // con thread e promise è possibile gestire un po le sincronizzazioni
 
 
 
