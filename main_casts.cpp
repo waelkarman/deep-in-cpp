@@ -101,17 +101,41 @@ public:
 
 int main()
 {
+    int test=0;
     Base1 *b1 = new Derived1("777","888");
     Base1 *b2 = new Derived2();
-
-    Derived1 *b3 = new Derived1("348","388");
-    Base1 *p1 = static_cast<Base1*>(b3);
-    Base0 *p2 = static_cast<Base0*>(b3);
+    Derived1 *d0 = new Derived1("348","388");
 
     cout << "---CAST OPERATOR---" << endl;
+    cout << "<- "<< ++test << endl << endl;
+
+    Base1 *p1 = static_cast<Base1*>(d0);
+    Base0 *p2 = static_cast<Base0*>(d0);
+    Base1 *pr1 = reinterpret_cast<Base1*>(d0);
+    Base0 *pr2 = reinterpret_cast<Base0*>(d0);
+
     //Dimostrazione del perchè il C-style cast non va bene
     cout << p1 << endl;
     cout << p2 << endl;
+    cout << pr1 << endl;
+    cout << pr2 << endl;
+
+    cout << "<- "<< ++test << endl << endl;
+    //Dimostrazione che l' upcast puo esser fatto se il tipo originale era Derived1
+    Derived1 *p4 = static_cast<Derived1*>(p1);
+    Derived1 *p5 = static_cast<Derived1*>(p1);
+    cout << p4 << endl;
+    cout << p5 << endl;
+
+    cout << "<- "<< ++test << endl << endl;
+    //Dimostrazione che il C-style cast è uguale al reinterpret_cast (FAILED why ??????)
+    Base1 *pr3 = (Base1*)d0;
+    Base0 *pr4 = (Base0*)d0;
+    cout << pr1 << endl;
+    cout << pr2 << endl;
+    cout << pr3 << endl;
+    cout << pr4 << endl;
+
 
     return 0;
 }
