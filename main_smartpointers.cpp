@@ -79,18 +79,20 @@ supponendo di essere unico possessore della memoria se viene eliminato rilascia 
 
 make_unique similmente a quanto avviene per shared crea nello heap un oggetto e restituisce il puntatore unique.
 */
+class Base1;
 
 class Base0{
-
 public:
     int a=7;
+    shared_ptr<Base1> p1;
+    weak_ptr<Base1> w1;
     Base0(){}
 };
 
 class Base1{
-
 public:
     int b=8;
+    shared_ptr<Base0> p0;
     Base1(){}
 };
 
@@ -136,11 +138,34 @@ int main(){
 
 
     //Alloco apposta una quantità presente sullo stack cosa non valida.
+    //{
+    //    int c=5;
+    //    int* pc=&c;
+    //    shared_ptr<int> p5 = shared_ptr<int>(pc);
+    //}//ERRORE
+
+
+    //Problema di circolarità dello shared_ptr il contatore non raggiungerà mai lo zero
     {
-        int c=5;
-        int* pc=&c;
-        shared_ptr<int> p5 = shared_ptr<int>(pc);
-    }//ERRORE
+        std::shared_ptr<Base0> pb0 = std::make_shared<Base0>();
+        std::shared_ptr<Base1> pb1 = std::make_shared<Base1>();
+        pb0->p1=pb1;
+        pb1->p0=pb0;
+        cout << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
+    }
+
+    {//SOLUTION
+        std::shared_ptr<Base0> pb0 = std::make_shared<Base0>();
+        std::shared_ptr<Base1> pb1 = std::make_shared<Base1>();
+        pb0->w1=pb1;
+        pb1->p0=pb0;
+        cout << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
+    }
+
+
+
+
+
 
 };
 
