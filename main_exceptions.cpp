@@ -38,15 +38,15 @@ c++ non supporta finally perche lo stack si contrae e vengono chiamati i distrut
 using namespace std;
 
 
-class exc_custom_pure0:public exception{
+class exc_custom_pure_std:public exception{
     string a;
 public:
-    exc_custom_pure0(){}
+    exc_custom_pure_std(){}
 
-    exc_custom_pure0(string n):a(n){
-        cout<<"exc_custom_pure0 LAUNCHED"<< endl;
+    exc_custom_pure_std(string n):a(n){
+        cout<<"exc_custom_pure_std LAUNCHED"<< endl;
     }
-    exc_custom_pure0(const exc_custom_pure0& ecp){
+    exc_custom_pure_std(const exc_custom_pure_std& ecp){
         a=ecp.get_a();
     }
     string get_a() const {
@@ -127,7 +127,7 @@ public:
     }
     void stampa1(){
         try{
-            throw exc_custom_pure0(a);
+            throw exc_custom_pure_std(a);
         }
         catch(out_of_range& e){
             cout << e.what() << " -> out_of_range" << endl;
@@ -195,7 +195,7 @@ int main()
     try{
         b1->stampa1();
     }
-    catch(exc_custom_pure0& e){
+    catch(exc_custom_pure_std& e){
         cout << typeid(e).name() << std::endl;
         cout << e.what() << std::endl;
         cout << "return copied value  - " << e.get_a() << endl << endl ;
@@ -203,7 +203,7 @@ int main()
     //catch(exception e){
     //    cout << typeid(e).name() << std::endl;
     //    cout << e.what() << std::endl;
-    //    auto ee = static_cast<exc_custom_pure0>(e);
+    //    auto ee = static_cast<exc_custom_pure_std>(e);
     //    cout << " - " << ee.get_a() << endl << endl ;
     //}
 
