@@ -26,8 +26,8 @@ catch(...){} significa qualunque eccezione sia fa questo
 in un blocco catch per rilanciare l eccezione stessa si usa solo "throw;"
 
 Nel catch fra tonde si mette l' oggetto di cui si è fatto throw tale. E' bene mettere nel catch un reference all oggetto (che viene passato al catch un po come il passaggio a una funzione)
-in modo che se l oggetto non è proprio quello specificato avendo indietro un puntatore non si perde l' informazione sul tipo originale perche metto un oggetto derivato in un eccezione base
-e avviene lo slicing ovvero una parte dell oggetto viene copiata e un parte viene persa essendo tale classe appunto una classe base.
+in modo che se l oggetto non è proprio quello specificato avendo indietro un puntatore non si perde l' informazione sul tipo originale perche metto un oggetto derivato in un eccezione Base0
+e avviene lo slicing ovvero una parte dell oggetto viene copiata e un parte viene persa essendo tale classe appunto una classe Base0.
 
 si puo creare una classe che importa exception ed eredita da exceprion che ridefinisce what() utile per creare eccezioni oppure si usano quelle predefinite
 
@@ -100,15 +100,15 @@ public:
 
 
 
-class Base0{
+class Base1{
 public:
     string a="999";
 
-    Base0(string x) : a(x) {
-        cout << "Costruttore della classe Base con x = " << x << endl;
+    Base1(string x) : a(x) {
+        cout << "Costruttore della classe Base0 con x = " << x << endl;
     }
 
-    Base0(const Base0& b ){}
+    Base1(const Base1& b ){}
 
     virtual void stampa0(){
         cout<< a << endl;
@@ -118,7 +118,7 @@ public:
     }
 };
 
-class Base{
+class Base0{
 public:
     string a="123";
 
@@ -139,13 +139,13 @@ public:
     }
 };
 
-class Derived1: public Base, public Base0{
+class Derived1: public Base0, public Base1{
 public:
     string a="789";
 
-    Derived1(string k, string j) : Base0(j), a(k) {
+    Derived1(string k, string j) : Base1(j), a(k) {
         cout << "Costruttore della classe Derivata con k = " << k << endl;
-        cout << "Mentre quello della classe Base ereditata con j = " << j << endl;
+        cout << "Mentre quello della classe Base0 ereditata con j = " << j << endl;
     }
 
     void stampa0() override {
@@ -170,8 +170,8 @@ public:
     }
     void stampa2() override {
         cout<< a << endl;
-        Base::stampa2();
         Base0::stampa2();
+        Base1::stampa2();
     }
 };
 
@@ -179,7 +179,7 @@ public:
 int main()
 {
     int test=0;
-    Base *b1 = new Derived1("777","888");
+    Base0 *b1 = new Derived1("777","888");
 
     cout << "<- "<< ++test << endl << endl;
 
