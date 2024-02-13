@@ -93,5 +93,7 @@ int main()
     Base *p31 = static_cast<Base*>(b3);
     Base0 *p32 = static_cast<Base0*>(b3);
 
+    //AGGIUNGI IL CASO APERTURA FILE IN CLASSE DERIVATA IL CUI METODO é VIRTUAL NELLA BASE E VEDI SE VIENE CHIAMATO IL DISTRUTTORE DELLA BASE
+
     return 0;
 }
