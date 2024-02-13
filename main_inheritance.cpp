@@ -7,7 +7,7 @@ public:
     string a="999";
 
     Base0(string x) : a(x) {
-        cout << "Costruttore della classe Base con x = " << x << endl;
+        cout << "Costruttore della classe Base0 con x = " << x << endl;
     }
 
     Base0(const Base0& b ){}
@@ -18,9 +18,15 @@ public:
     void stampa2(){
         cout<< a << endl;
     }
+    virtual void stampa5(){
+        cout<< a << endl;
+    }
+    ~Base0(){
+        cout << "Distruttore Base0" << endl;
+    }
 };
 
-class Base{
+class Base1{
 public:
     string a="123";
 
@@ -35,13 +41,13 @@ public:
     }
 };
 
-class Derived1: public Base, public Base0{
+class Derived1: public Base1, public Base0{
 public:
     string a="789";
 
     Derived1(string k, string j) : Base0(j), a(k) {
         cout << "Costruttore della classe Derivata con k = " << k << endl;
-        cout << "Mentre quello della classe Base ereditata con j = " << j << endl;
+        //cout << "Mentre quello della classe Base1 ereditata con j = " << j << endl;
     }
     void stampa0() override {
         cout<< a << endl;
@@ -51,12 +57,18 @@ public:
     }
     void stampa2() override {
         cout<< a << endl;
-        Base::stampa2();
+        Base1::stampa2();
         Base0::stampa2();
+    }
+    void stampa5() override {
+        cout<< "APRO UN FILE" << endl;
+    }
+    ~Derived1(){
+        cout << "Distruttore Derived1" << endl;
     }
 };
 
-class Derived2: public Base{
+class Derived2: public Base1{
 public:
     string a="456";
 
@@ -76,8 +88,8 @@ int main()
 {
     cout << "INHERITANCE:" << endl;
 
-    Base *b1 = new Derived1("777","888");
-    Base *b2 = new Derived2();
+    Base1 *b1 = new Derived1("777","888");
+    Base1 *b2 = new Derived2();
 
     b1->stampa0();
     b2->stampa0();
@@ -88,12 +100,16 @@ int main()
     b1->stampa2();
     b2->stampa2();
 
-    cout << "cast operators!" << endl;
-    Derived1 *b3 = new Derived1("348","388");
-    Base *p31 = static_cast<Base*>(b3);
-    Base0 *p32 = static_cast<Base0*>(b3);
+    //AGGIUNGI IL CASO APERTURA FILE IN CLASSE DERIVATA IL CUI METODO é VIRTUAL NELLA Base1 E VEDI SE VIENE CHIAMATO IL DISTRUTTORE DELLA Base1
+    Base0 *b3 = new Derived1("123","321");
+    b3->stampa5();
+    Derived1* d1 = dynamic_cast<Derived1*>(b3);
+    if (d1 != nullptr) {
+        delete d1;
+    }
 
-    //AGGIUNGI IL CASO APERTURA FILE IN CLASSE DERIVATA IL CUI METODO é VIRTUAL NELLA BASE E VEDI SE VIENE CHIAMATO IL DISTRUTTORE DELLA BASE
+    //Non chiama il distruttore della classe derivata e quindi non chiudo il file aperto nel metodo overriden nella classe Derived1
+    //delete b3;
 
     return 0;
 }
