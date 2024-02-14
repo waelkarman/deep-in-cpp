@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 
 using namespace std;
 
@@ -87,11 +88,20 @@ public:
 
 class Base1{
 public:
+    int a;
     int operator()(int i){
-        cout << i-1 << endl;
-        return i-1;
+        cout << i+a << endl;
+        return i+a;
+    }
+    int get_a(){
+        return a;
     }
 };
+
+template <typename F>
+void some_function(F& f,int i){
+    f(i); // f puo essere sia un funzionale che un puntatore a funzione
+}
 
 int main(){
     //declaration function ptr
@@ -122,17 +132,28 @@ int main(){
     // The reference still stay even if destruction was expected
     b2.executeRef(101);
 
+    cout << "----" << endl;
 
+    Base1 func_class;
+    func_class.a=15;
+    func_class(50); //chiamata come se fosse una funzione
+    cout<<func_class.get_a()<<endl;
 
+    cout << "----" << endl;
 
+    //Dovrebbe rompersi perchè il riferimento ad y è stato cancellato
+    std::function<int(const int&)> function_with_capture;
+    {
+        int y = 5;
+        function_with_capture = [&y](const int& i){ cout<<i+y<<endl; y=2; return i+y; };
+        function_with_capture(10);
+    }
+    function_with_capture(80);
 
-
-
-
-
-
-
-
+    //POSSO PASSARE UN FUNZIONALE O UNA FUNZIONE
+    std::function<int(const int&)> function_ptr = [](const int& i){ cout<<i+4<<endl; return i+4; };
+    some_function(func_class,5); //funzionale
+    some_function(function_ptr,5); //puntatore a funzione
 
 };
 
