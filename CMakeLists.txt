@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(main_theory main_theory.cpp)
+add_executable(main_iterator main_iterator.cpp)
 add_executable(main_template main_template.cpp)
 add_executable(main_inheritance main_inheritance.cpp)
 add_executable(main_copyandswap main_copyandswap.cpp)
