@@ -7,5 +7,7 @@ int main(){
 
     //variant
     //forwarding
+    // explicit, inline, volatile,
+
 };
 

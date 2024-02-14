@@ -151,70 +151,7 @@ int main()
 
     //classe che eredita da una sola classe base avrà una sola vtable
 
-    cout << "REFERENCE-POINTER differenze"<<endl;
-
     cout << "FRIEND:"<<endl;
-    //le funzioni friend devono esistere nel codice prima di essere definite friend
-    //i campi privati on possono essere visti all esterno della classe stessa tuttavia è possibile dichiarare friend altre classi o funzioni per permettergli
-    //di accedere ai campi private.
-
-    //void func(A &a){a.datoprivato = 1;}
-    //class ClasseA {
-    //    friend class ClasseB; // Dichiarazione di amicizia
-    //    friend void func(A&);
-    //private:
-    //    int datoPrivato;
-    //public:
-    //    ClasseA() : datoPrivato(42) {} // Costruttore che inizializza datoPrivato
-    //};
-    //class ClasseB {
-    //public:
-    //    void mostraDatoPrivatoDaA(const ClasseA& a) {
-    //        // Accesso diretto al membro privato di ClasseA grazie alla friendship
-    //        std::cout << "Dato privato di ClasseA: " << a.datoPrivato << std::endl;
-    //    }
-    //};
-
-    //int main() {
-    //    ClasseA a;
-    //    ClasseB b;
-    //    b.mostraDatoPrivatoDaA(a); // Mostra: Dato privato di ClasseA: 42
-    //    return 0;
-    //}
-
-
-
-    // un metodo definito const non modifica lo stato dell oggetto se const è abbinato ad un reference permette di evitare la copia tenendo immutato l oggetto passato
-    // override serve a specificare che si fa un override e quindi il compilatore eseguirà un marching dei tipi
-    // noexcept dice al compilatore che una funzione non lancerà eccezioni questo permette al compilatore di ottimizzare meglio il codice perche sa di non dover gestire eccezioni
-    //slicing per slicing si intende la copia di qualcosa in uno spazio piu piccolo che è consentita senza problemi ma non viene tutto effettivamente copiato ma solo la parte che ci entra con la conseguente perdita di informazione
-
-
-    // explicit, inline, volatile,
-
-
-    // iteratori
-    //1:02:13
-
-    //ce una classe operator per ogni tipo come  std::vector<int>::iterator ,  supporta ++ e -- punta sempre ad un elemento della collezione su puo vedere anche se punta allo stesso elemento o no con ==,  !=, begin() gli iteratori possono essere validi o non end()primo elemento fuori lista, iteratore non valido
-    //si puo cancellare un elemento iterando ma bisogna farlo dall iteratore non dalla lista . tipo il metodo erase accetta un iteratore come parametro.
-
-    // std::vector<int> myVector = {1, 2, 3, 4, 5};
-    // for (auto it = myVector.begin(); it != myVector.end(); /* not incrementing here */) {
-    //     if (*it == 3) {
-    //         it = myVector.erase(it); // Cancella l'elemento e sposta l'iteratore all'elemento successivo
-    //     } else {
-    //         ++it; // Incrementa solo se non cancelli
-    //     }
-    // }
-
-    //esisite il metodo remove_if che prende una funzione che se ritorna true cancella l elemento se ritorna false invece no. questi si chiamano funzionali e non funzioni.
-    // anche il metodo sort ordina ascendente per default o prende in ingresso un funzionale che definisce il criterio di ordinamento
-    // il metodi splice toglie elementi dal primo contenitore e li mette nel scondo passato come argomento
-    // unique toglie i duplicati adiacenti quindi se si fa prima sort e poi unique si tolgono tutti.
-    //essendo i contenitori come le mappe ordinati non è possibili costruirne una di un tipo custom senza ridefinire l' operatore minore. bisogna inoltre garantire la copia e l' assegnazione
-
-
 
 
     cout << "COPIA E MOVIMENTO" << endl;
