@@ -83,10 +83,10 @@ int main(){
     cout << "---------- " << ++test << endl;
 
     {
-        std::vector<int> v = {4, 8, 1, 6, 3};
+        std::vector<int> v = {4, 8, 1, 6, 4, 3};
 
         sort(v.begin(), v.end(), [](int a, int b){
-            if(a<b){return false;}else{return true;}
+            if(a<=b){return false;}else{return true;}
         });
         for_each(v.begin(),v.end(),[](int i){cout<<i;});
         cout << endl;
