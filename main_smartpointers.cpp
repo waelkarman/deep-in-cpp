@@ -35,9 +35,9 @@ nel c++11 nella libreria <memory> sono state definite 3 classi di smartpointer
 manintiene un contatore all oggetto incrementato per copia e se si distrugge uno smart pointer il contatore si decrementa se tocca 0 si dealloca la memoria ma è
 possibile specificare cosa fare invece di rilasciare la memoria
 get(), operator*, operator-> restituiscono il puntatore nativo
-delete, decrementa il contatore
+delete, decrementa il contatore (DA NON CHIAMARE MAI)
 operator=, aumenta il contatore
-reset() ??
+reset() resetta lo shared pointer con un altro oggetto
 
 make_shared<>() lo si puo usare anche con tipi primitivi locali tipo int. il metodo garantisce una allocazione sullo heap
 come argomenti prende direttamente i valori da passare al costruttore del tipo passato fra parentesi angolari
@@ -98,6 +98,8 @@ public:
 
 
 int main(){
+
+    //  ------------ SHARED AND WEAK
 
     //Osservo come il contatore dello smart_ptr sale e scende
     shared_ptr<Base0> p0;
@@ -162,10 +164,22 @@ int main(){
         cout << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
     }
 
+    //  ------------ UNIQUE
+    std::unique_ptr<Base0> u0 = std::make_unique<Base0>();
+    cout << "Accesso all unique_ptr 0 - : " << u0->a << endl;
+    std::unique_ptr<Base0> u1 = std::move(u0);
+    cout << "Accesso all unique_ptr 1 - : " << u1->a << endl;
 
+    {
+        // INTERROMPE L' ESECUZIONE SENZA DARE ALCUN SEGNALE
+        //try{
+        //    cout << "Accesso all unique_ptr 0 - : " << u0->a << endl;
+        //}catch(...){
+        //    cout << "ERRORE" << endl;
+        //}//ERRORE
+    }
 
-
-
+    cout << "termine esecuzione" << endl;
 
 };
 

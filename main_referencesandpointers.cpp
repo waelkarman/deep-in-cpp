@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
@@ -18,6 +19,63 @@ Nessuna Aritmetica: Non si può fare aritmetica con i riferimenti.
 */
 
 int main(){
-    cout<<"HELLO";
+
+    // I reference vanno per forza inizializzati
+    {
+        int a = 5;
+        int& c = a; // c è un riferimento a a
+        cout << a << " - " << c << endl;
+        a = 7;
+        cout << a << " - " << c << endl;
+        c = 8;
+        cout << a << " - " << c << endl;
+    }
+
+    cout << "----" << endl;
+    {
+        int h = 10;
+        int&& k = h+1;
+        cout << h << " - " << k << endl;
+        h = 19;
+        cout << h << " - " << k << endl;
+        k = 30;
+        cout << h << " - " << k << endl;
+    }
+
+    cout << "----" << endl;
+    {
+        int h = 10;
+        int&& k = std::move(h); // COPY PERFORMED: if int had the move constructor the move would have been done
+        cout << h << " - " << k << endl;
+        h = 19;
+        cout << h << " - " << k << endl;
+        k = 30;
+        cout << h << " - " << k << endl;
+        cout << &h << " - " << &k << endl;
+    }
+
+    cout << "----" << endl;
+    {
+        int* h = (int*)std::malloc(sizeof(int));
+        int&& k = std::move(*h); // MOVE HERE IS PERFORMING COPY
+        cout << *h << " - " << k << endl;
+        *h = 19;
+        cout << *h << " - " << k << endl;
+        k = 30;
+        cout << *h << " - " << k << endl;
+        cout << h << " - " << &k << endl;
+    }
+
+    cout << "----" << endl;
+    {
+        shared_ptr<int> h = make_shared<int>(50);
+        cout << h << " - " << "_" << endl;
+        shared_ptr<int> k = std::move(h); // MOVE HERE IS PERFORMING MOVE
+        cout << h << " - " << k << endl;
+        *k = 19;
+        cout << "_" << " - " << *k << endl;
+        cout << h << " - " << k << endl;
+    }
+
 };
 
