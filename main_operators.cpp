@@ -12,6 +12,8 @@ Operatori di accesso: [], ->, ->*, ()
 Operatori unari: +, -, *, &, ~, !, ++, --
 Gestione della memoria: new, new[], delete, delete[]
 Altri operatori: ,, <<, >>, &, |, ^, ~
+
+la definizione degli operatori per oggetti diversi conviene farla fuori dalle classi un modo che siano entrambe già definite
 */
 
 
