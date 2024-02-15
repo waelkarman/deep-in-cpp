@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
@@ -94,8 +95,56 @@ using namespace std;
 // v.push_back(str) in questo caso str viene copiato nel vettore e continua ad esserci copia in str
 // v.push_back(std::move(str)) in questo caso str si svuota e non avviene la copia
 
+class Base{
+    int i;
+    string s;
+    shared_ptr<int> si;
+
+    friend void swap(Base& a,Base& b);
+public:
+
+    Base(const int& i, const string& s):i(i),s(s),si(make_shared<int>(i)){
+        cout << "constructor" << endl;
+    }
+
+    Base(const Base& o):i(o.i),s(o.s),si(make_shared<int>(*o.si)){
+        cout << "copy constructor" << endl;
+    }
+
+    Base(Base&& o) noexcept :i(std::move(o.i)), s(std::move(o.s)), si(std::move(o.si)){
+        cout << "move constructor" << endl;
+    }
+
+    Base& operator=(Base o){
+        swap(*this,o);
+        return *this;
+    }
+
+    int get_i()const{return i;}
+
+    string get_s()const{return s;}
+
+    shared_ptr<int> get_si()const{return si;}
+
+    ~Base(){}
+};
+
+void swap(Base& a,Base& b){
+    std::swap(a.i, b.i);
+    std::swap(a.s, b.s);
+    std::swap(a.si, b.si);
+};
 
 int main(){
-    cout<<"HELLO";
+
+    Base a(7, "ciao");
+    a = Base(8, "hello");
+
+    {
+        Base b{9,"hola"};
+        a=b;
+    }
+
+
 };
 
