@@ -143,6 +143,11 @@ int main() {
 
     t3.join();
 
+
+    //-----------------------------------MOVIMENTO THREAD IN UN ALTRO
+
+
+
     return 0;
 }
 
