@@ -121,11 +121,15 @@ unsigned long long funzioneLunga(int n) {
 
 int main() {
     // Avvia un'operazione asincrona
-    std::future<unsigned long long> fut_obj = std::async(funzioneLunga, 45);
+    std::future<unsigned long long> fut_obj0 = std::async(funzioneLunga, 46);
+    std::future<unsigned long long> fut_obj1 = std::async(funzioneLunga, 47);
     // Puoi fare altre cose qui mentre funzioneLunga sta eseguendo...
+    cout << "Procedo con il calcolo 0 ."<< endl;
     // Recupera e stampa il risultato dell'operazione asincrona
-    long long risultato = fut_obj.get(); // Attesa bloccante fino al completamento dell'operazione
-    std::cout << "Risultato: " << risultato << std::endl;
+    long long risultato0 = fut_obj0.get();
+    cout << "Procedo con il calcolo 1 ."<< endl;
+    long long risultato1 = fut_obj1.get(); // Attesa bloccante fino al completamento dell'operazione
+    std::cout << "Risultato: " << risultato0 << "-" << risultato1 << std::endl;
 
     return 0;
 }
