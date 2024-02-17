@@ -2,9 +2,11 @@
 
 using namespace std;
 
-//le funzioni friend devono esistere nel codice prima di essere definite friend
-//i campi privati non possono essere visti all esterno della classe stessa tuttavia è possibile dichiarare friend altre classi o funzioni per permettergli
-//di accedere ai campi private.
+/*
+le funzioni friend devono esistere nel codice prima di essere definite friend
+i campi privati non possono essere visti all esterno della classe stessa tuttavia è possibile dichiarare friend altre classi o funzioni per permettergli
+di accedere ai campi private.
+*/
 
 class Base0;
 void func(Base0 &a);

@@ -3,67 +3,66 @@
 
 using namespace std;
 
-//cout << "PUNTATORI A FUNZIONE: "<<endl;
+/*
+sintassi <tipo_ritornato>(*var )(<argomenti>)
+assegnamento int f(int i, double d){ .. .. }
+int (*var)(int,double);
+var = f;
+var = &f; identico al precedente
+var(10,3.48);
+(*var)(10,3.48); identico al precedente
 
-// sintassi <tipo_ritornato>(*var )(<argomenti>)
-// assegnamento int f(int i, double d){ .. .. }
-// int (*var)(int,double);
-// var = f;
-// var = &f; identico al precedente
-// var(10,3.48);
-// (*var)(10,3.48); identico al precedente
+il match dei tipi deve essere perfetto anche se ci sono parametri di default va specificato il tipo perche i parametri di default sono sempre parametri passati alla funzione.
 
-// il match dei tipi deve essere perfetto anche se ci sono parametri di default va specificato il tipo perche i parametri di default sono sempre parametri passati alla funzione.
+cout << "FUNCTIONAL OBJECT" << endl;
 
-//cout << "FUNCTIONAL OBJECT" << endl;
+è un oggetto con ridefinito l' operatore operator()
+ class FC{
+ public:
+     int operator() (int v){
+         return v*2;
+     }
+ };
 
-//è un oggetto con ridefinito l' operatore operator()
-// class FC{
-// public:
-//     int operator() (int v){
-//         return v*2;
-//     }
-// };
+posso usare FC come una funzione :
 
-//posso usare FC come una funzione :
+FC fc; costruttore a cui potrei passare cose
+int i = fc(5); fc gia costruito cosi chiamato chiamo la funzione definita nell operatore
+vale 10
 
-// FC fc; costruttore a cui potrei passare cose
-// int i = fc(5); fc gia costruito cosi chiamato chiamo la funzione definita nell operatore
-// // vale 10
+anche operator() puo essere overloaded
+se all oggetto metto dei campi privati posso definire un funzione risponda in funzione di uno stato interno nascosto
+è possibile contare quante volte viene invocata una funzione!
 
-//anche operator() puo essere overloaded
-//se all oggetto metto dei campi privati posso definire un funzione risponda in funzione di uno stato interno nascosto
-// è possibile contare quante volte viene invocata una funzione!
+usando i template
+ è possibile scrivere
+ template <typename F>
+ void some_function(F& f){
+     f(); // f puo essere sia un funzionale che un puntatore a funzione
+ }
+in entrambi i casi la riga f(); sarà risolta nel casi puntatore a funzione come invocazione della funzione puntata
+in caso di oggetto funzionale come chiamata all operator() ridefinito aumentando la generalità dell espressione
+il remove if quindi può prendere un oggetto funzionale o una funzione oppure si po fare l overload e dire remove if e si da un valore intero da rimuovere
 
-// usando i template
-//  è possibile scrivere
-//  template <typename F>
-//  void some_function(F& f){
-//      f(); // f puo essere sia un funzionale che un puntatore a funzione
-//  }
-// in entrambi i casi la riga f(); sarà risolta nel casi puntatore a funzione come invocazione della funzione puntata
-// in caso di oggetto funzionale come chiamata all operator() ridefinito aumentando la generalità dell espressione
-// il remove if quindi può prendere un oggetto funzionale o una funzione oppure si po fare l overload e dire remove if e si da un valore intero da rimuovere
+cout << "ESPRESSIONI LAMBDA" << endl;
 
-//cout << "ESPRESSIONI LAMBDA" << endl;
+la labda è un espressione sintattica che semplifica la creazione di un oggetto funzionale
+uno dei vantaggi è che non abbiamo dovuto dare un nome alla funzione
+foreach(v.begin(),v.end(), funzionale ); il funzionale puo essere rimpiazzato da una labda
+foreach(v.begin(),v.end(), [](int t) -> string { count<<i; return "finito";} )
 
-// la labda è un espressione sintattica che semplifica la creazione di un oggetto funzionale
-// uno dei vantaggi è che non abbiamo dovuto dare un nome alla funzione
-// foreach(v.begin(),v.end(), funzionale ); il funzionale puo essere rimpiazzato da una labda
-// foreach(v.begin(),v.end(), [](int t) -> string { count<<i; return "finito";} )
+se il valore di ritorno non si specifica il controllo del compilatore non viene fatto ma è lecito ritornare a patto di non ritornare cose diverse a secondo di un if tipo ecc
+se nelle quadre della labda non si mette niente le funzioni lambda definite sono alla pari di comuni funzioni
+se nelle quadre invece si aggiungono delle variabili è possibile renderle disponibili nel corpo della funzione
 
-// se il valore di ritorno non si specifica il controllo del compilatore non viene fatto ma è lecito ritornare a patto di non ritornare cose diverse a secondo di un if tipo ecc
-// se nelle quadre della labda non si mette niente le funzioni lambda definite sono alla pari di comuni funzioni
-// se nelle quadre invece si aggiungono delle variabili è possibile renderle disponibili nel corpo della funzione
+attenzione a chiamare una labda quando i referece passati non sono piu disponibili peche magari le funzioni sono state distrutte
 
-// attenzione a chiamare una labda quando i referece passati non sono piu disponibili peche magari le funzioni sono state distrutte
-
-//posso passare:
-// variabili [a,b,c]
-// reference a variabili [&a,&b,&c]
-// [=] cattura tutto per valore
-// [&] cattura tutto per riferimento
-
+posso passare:
+variabili [a,b,c]
+reference a variabili [&a,&b,&c]
+[=] cattura tutto per valore
+[&] cattura tutto per riferimento
+*/
 
 int f0(const int& i){ cout<<i<<endl; return i; }
 int f1(const int& i){ cout<<i+1<<endl; return i+1; }
