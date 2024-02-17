@@ -1,7 +1,8 @@
+#include <future>
 #include <iostream>
+#include <thread>
 
 using namespace std;
-
 
 //se il programma fa computazione pesante inutile fare tanti thread perche quelli in esecuzione sono nel numero dei processori fisici.
 //se invece si fa tanto i/o puoavere unsenso avere molti thread per passimizzare la computazione e quelliche sono inattesa attendono l i/o
@@ -54,7 +55,55 @@ using namespace std;
 // yield() mi rimento in wait e faccio passare avanti gli altri
 // con thread e promise è possibile gestire un po le sincronizzazioni come con async in realtà è esattametne quello che async fa
 
-int main(){
-    cout<<"HELLO";
-};
+unsigned long long funzioneLunga(int n) {
+    if (n <= 1) {
+        return n;
+    } else {
+        return funzioneLunga(n - 1) + funzioneLunga(n - 2);
+    }
+}
+
+void funzioneConPromise(std::promise<unsigned long long> prom0, std::promise<unsigned long long> prom1) {
+    // Simula un calcolo
+    unsigned long long risultato0 = funzioneLunga(47); // Un risultato ipotetico del calcolo
+    // Imposta il valore del promise
+    prom0.set_value(risultato0);
+
+    cout << "Computazione 0 ." << endl;
+
+    // Simula un calcolo
+    unsigned long long risultato1 = funzioneLunga(47); // Un risultato ipotetico del calcolo
+    // Imposta il valore del promise
+    prom0.set_value(risultato1);
+
+    cout << "Computazione 1 ." << endl;
+}
+
+int main() {
+    // Crea un promise
+    std::promise<unsigned long long> prom0;
+    std::promise<unsigned long long> prom1;
+    // Ottieni un future da questo promise
+    std::future<unsigned long long> fut0 = prom0.get_future();
+    std::future<unsigned long long> fut1 = prom1.get_future();
+
+    // Avvia un thread passando il promise (è necessario usare std::move)
+    std::thread t(funzioneConPromise, std::move(prom0), std::move(prom1));
+
+    // Fai qualcosa nel thread principale...
+
+    // Recupera il risultato dal future
+    int risultato0 = fut0.get();
+    std::cout << "Risultato0: " << risultato0 << std::endl;
+
+    // Recupera il risultato dal future
+    int risultato1 = fut1.get();
+    std::cout << "Risultato1: " << risultato1 << std::endl;
+
+
+    // Non dimenticare di unire il thread
+    t.detach();
+
+    return 0;
+}
 

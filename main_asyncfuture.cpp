@@ -111,6 +111,13 @@ using namespace std;
 //dall oggetto future chiameranno la get() su di esso.
 //    reg12 08:57 schemino
 
+//Quando si definisce async si lascia al compilatore la decisione del lancio del thread a menoche non si dichiari esplicitamnte
+//nel primo argomento la politica di esecuzione:
+//std::async(std::launch::async,funzioneLunga, 47); // lancia il thread subito
+//std::async(std::launch::deferred,funzioneLunga, 47); // lancia il thread quando viene chiamata get o wait ma l esecuzione
+//non avviene su un nuovo thread ma sul thread corrente che chiama la get o la wait
+
+
 unsigned long long funzioneLunga(int n) {
     if (n <= 1) {
         return n;
@@ -120,16 +127,20 @@ unsigned long long funzioneLunga(int n) {
 }
 
 int main() {
-    // Avvia un'operazione asincrona
-    std::future<unsigned long long> fut_obj0 = std::async(funzioneLunga, 46);
-    std::future<unsigned long long> fut_obj1 = std::async(funzioneLunga, 47);
-    // Puoi fare altre cose qui mentre funzioneLunga sta eseguendo...
-    cout << "Procedo con il calcolo 0 ."<< endl;
-    // Recupera e stampa il risultato dell'operazione asincrona
+    // Definizione
+    std::future<unsigned long long> fut_obj0 = std::async(std::launch::async,funzioneLunga, 47);
+    std::future<unsigned long long> fut_obj1 = std::async(std::launch::async,funzioneLunga, 46);
+    std::future<unsigned long long> fut_obj2 = std::async(std::launch::deferred,funzioneLunga, 46);
+
+    cout << "Procedo con il calcolo 0."<< endl;
     long long risultato0 = fut_obj0.get();
-    cout << "Procedo con il calcolo 1 ."<< endl;
-    long long risultato1 = fut_obj1.get(); // Attesa bloccante fino al completamento dell'operazione
+    cout << "Procedo con il calcolo 1."<< endl;
+    long long risultato1 = fut_obj1.get();
+    // il risultato è simultaneo perche la computazione 0 è piu lunga della 1 e quindi la 1 avrà già finito quando la 0 finisce
+
     std::cout << "Risultato: " << risultato0 << "-" << risultato1 << std::endl;
+    long long risultato2 = fut_obj2.get();
+    std::cout << "Risultato: " << risultato2 << std::endl;
 
     return 0;
 }
