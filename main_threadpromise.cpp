@@ -71,45 +71,77 @@ unsigned long long funzioneLunga(int n) {
 }
 
 void funzioneConPromise(std::promise<unsigned long long> prom0, std::promise<unsigned long long> prom1) {
-    // Simula un calcolo
-    unsigned long long risultato0 = funzioneLunga(47); // Un risultato ipotetico del calcolo
-    // Imposta il valore del promise
+
+    unsigned long long risultato0 = funzioneLunga(47);
     prom0.set_value(risultato0);
 
-    cout << "Computazione 0 ." << endl;
+    cout << "Computazione parziale 0 ." << endl;
 
-    // Simula un calcolo
-    unsigned long long risultato1 = funzioneLunga(47); // Un risultato ipotetico del calcolo
-    // Imposta il valore del promise
-    prom0.set_value(risultato1);
+    unsigned long long risultato1 = funzioneLunga(47);
+    prom1.set_value(risultato1);
 
-    cout << "Computazione 1 ." << endl;
+    cout << "Computazione parziale 1 ." << endl;
 }
 
 int main() {
     // Crea un promise
     std::promise<unsigned long long> prom0;
     std::promise<unsigned long long> prom1;
+    std::promise<int> prom2;
+    std::promise<unsigned long long> prom3;
+    std::promise<unsigned long long> prom4;
+    std::promise<int> prom5;
     // Ottieni un future da questo promise
     std::future<unsigned long long> fut0 = prom0.get_future();
     std::future<unsigned long long> fut1 = prom1.get_future();
-
+    std::future<int> fut2 = prom2.get_future();
+    std::future<unsigned long long> fut3 = prom3.get_future();
+    std::future<unsigned long long> fut4 = prom4.get_future();
+    std::future<int> fut5 = prom5.get_future();
     // Avvia un thread passando il promise (è necessario usare std::move)
-    std::thread t(funzioneConPromise, std::move(prom0), std::move(prom1));
+    std::thread t0(funzioneConPromise, std::move(prom0), std::move(prom1));
 
     // Fai qualcosa nel thread principale...
+    cout << "svolgo operazioni" << endl;
+    std::thread t1([](std::promise<int> prom2){
+        cout << "Corpo lambda" << endl;
+        prom2.set_value(20);
+    }, std::move(prom2));
 
-    // Recupera il risultato dal future
-    int risultato0 = fut0.get();
+    int risultato2 = fut2.get();
+    std::cout << "Risultato2: " << risultato2 << std::endl;
+
+    unsigned long long risultato0 = fut0.get();
     std::cout << "Risultato0: " << risultato0 << std::endl;
-
-    // Recupera il risultato dal future
-    int risultato1 = fut1.get();
+    unsigned long long risultato1 = fut1.get();
     std::cout << "Risultato1: " << risultato1 << std::endl;
 
 
+    std::thread t2(funzioneConPromise, std::move(prom3), std::move(prom4)); // questo thread essendo detached viene terminato prima del tempo
+
     // Non dimenticare di unire il thread
-    t.join();
+    t0.join();
+    t1.join();
+    t2.detach();
+
+
+    //-----------------------------------ERRORS
+
+    int* i = (int*)malloc(sizeof(int));
+    *i=1000;
+    unsigned long long (*func_ptr)(int) = funzioneLunga;
+    cout << "Lancio il thread incriminato" << endl;
+
+    std::thread t3([&](){
+        unsigned long long risultato3 = func_ptr(50);
+        cout << "Risultato3: " << risultato3 << endl;
+        cout << "Stampo I che però non dovrebbe esistere:" << *i << endl;
+    });
+
+    cout << "Continuo a fare le mie operazioni chiamo la free prima che il thread abbia fatto accesso su i" << endl;
+    free(i); //LA RIGA SEGUENTE STAMPA IL VALORE DI i GIA CANCELLATO E QUINDI NULL =0
+
+    t3.join();
 
     return 0;
 }
