@@ -4,12 +4,14 @@ project(main_theory LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-add_executable(main_conditionvariable main_conditionvariable.cpp)
-add_executable(main_threadpromise main_threadpromise.cpp)
+
 add_executable(main_asyncfuture main_asyncfuture.cpp)
+add_executable(main_threadpromise main_threadpromise.cpp)
 add_executable(main_callonce main_callonce.cpp)
 add_executable(main_mutexlockguard main_mutexlockguard.cpp)
+add_executable(main_conditionvariable main_conditionvariable.cpp)
 
 add_executable(main_theory main_theory.cpp)
 add_executable(main_tricks main_tricks.cpp)

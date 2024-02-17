@@ -153,15 +153,6 @@ int main()
 
     cout << "PROGRAMMAZIONE CONCORRENTE" << endl;
 
-
-
-
-
-
-
-
-
-
     // IO << <<
     // costruttore di copia
     // ridefinizione degli operatori

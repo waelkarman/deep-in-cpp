@@ -1,3 +1,4 @@
+#include <future>
 #include <iostream>
 
 using namespace std;
@@ -110,7 +111,20 @@ using namespace std;
 //dall oggetto future chiameranno la get() su di esso.
 //    reg12 08:57 schemino
 
-int main(){
-    cout<<"HELLO";
-};
+int funzioneLunga(int x) {
+    // Simula un calcolo lungo
+    return x * 2;
+}
+
+int main() {
+    // Avvia un'operazione asincrona
+    std::future<int> fut_obj = std::async(funzioneLunga, 10);
+    // Puoi fare altre cose qui mentre funzioneLunga sta eseguendo...
+    // Recupera e stampa il risultato dell'operazione asincrona
+    int risultato = fut_obj.get(); // Attesa bloccante fino al completamento dell'operazione
+    std::cout << "Risultato: " << risultato << std::endl;
+
+    return 0;
+}
+
 
