@@ -79,6 +79,8 @@ int main() {
     std::thread t0(incr,std::ref(p));
     std::thread t1(decr,std::ref(p));
 
+    cout << "Test di accesso controllato ad una risorsa." << endl;
+
 
     t0.join();
     t1.join();
