@@ -162,8 +162,44 @@ int main()
     //se il costruttore di copia e l operatore di assegnazione sono privati la copia non si fa.
 
     //SOLID
+
+
+
+
     //ACID
+
+
+
+
+
     //REST
+
+
+
+/*
+
+    un oggetto visibile solo ad un thread è thread safe
+    un oggetto immutabile è thread safe
+    un oggetto non immutabile e accessibile da piu thread va incapsulato in un oggetto che garantisca la sua sinchronizzazione
+
+    ->bozza sequenziale per dominare il problemas
+    ->iniziare con riconoscere le operazioni parallele
+    ->vedere sotto quali condizioni queste operazioni possono esser fatte parallelamente (lavare piatti -> mangiare)
+    ->le variabili risorse che intervengono in queste condizioni saranno accessibili ai due ipotetici thread che eseguiranno le
+    ->operazioni parallele. assicurarne la sincronizzazione
+
+    -evitare quanto piu le variabili globali per limitare i punti di contatto fra i thread
+    -evitare di prendere possesso di una risorsa mentre se ne ha gia un altra per cause deadlock
+    -oppure selezione un ordine di acquisizione risorse esiste un supporto del c++ come std::lock
+    -usare il lock il meno possibile per il minimo tempo possibile
+    -documentare sempre la concorrenza
+    -attività indipendenti
+    -blocchi di dati
+    -capire la macchina quanti thread in parallelo è in gradi di eseguire una macchina
+
+    il numero dei core è in aumento quindi tenere a mente il trend che si sta pigliando quindi cercare di scrivere applicazioni
+    che tengano in conto questo
+*/
 
     return 0;
 }
