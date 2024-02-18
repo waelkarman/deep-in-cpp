@@ -58,7 +58,7 @@ public:
 };
 
 
-void incr(prod_cons& p){
+void incr(prod_cons& p,int n){
     for(int i = 0 ; i < 100 ; i++){
         p.increase(2);
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -66,9 +66,9 @@ void incr(prod_cons& p){
     }
 }
 
-void decr(prod_cons& p){
+void decr(prod_cons& p,int n){
     for(int i = 0 ; i < 100 ; i++){
-        p.decrease(2);
+        p.decrease(n);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         //std::this_thread::yield();
     }
@@ -76,14 +76,16 @@ void decr(prod_cons& p){
 
 int main() {
     prod_cons p;
-    std::thread t0(incr,std::ref(p));
-    std::thread t1(decr,std::ref(p));
+    std::thread t0(incr,std::ref(p),2);
+    std::thread t1(decr,std::ref(p),2);
+    std::thread t2(incr,std::ref(p),1);
 
     cout << "Test di accesso controllato ad una risorsa." << endl;
 
 
     t0.join();
     t1.join();
+    t2.detach(); // non termina e viene cancellato
     return 0;
 }
 
