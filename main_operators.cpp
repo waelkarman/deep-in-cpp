@@ -58,6 +58,10 @@ public:
         }
     }
 
+    friend std::ostream& operator<<(std::ostream &os, const Base0 &base) {
+        return os << "a: " << base.a << ", b: " << base.b;
+    }
+
     bool operator==(const Base0& i) {
         if(this->a == i.a){
             return true;
@@ -95,6 +99,7 @@ int main(){
     Base0 b3(3,2);
     Base0 b4(4,2);
     Base0 b5(5,2);
+    Base0 b7(55,23);
 
     cout << "---------- " << ++test << endl;
     if(b1>b2){
@@ -148,6 +153,10 @@ int main(){
     }else{
         cout<<"false"<<endl;
     }
+
+
+    cout << "---------- " << ++test << endl;
+    cout << b7 << endl;
 
 };
 
