@@ -2,6 +2,16 @@
 
 using namespace std;
 
+
+
+/*
+se si definisce uno fra distruttore costruttore di copia e assegnazione bisogna definire gli altri due perchè se non ci basta quello che fa il compilatore
+e ne definiamo uno gli altri due definiti dal compilatore sicuro non sono sufficienti
+
+
+*/
+
+
 class Base0{
 public:
     string a="999";

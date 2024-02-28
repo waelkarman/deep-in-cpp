@@ -136,6 +136,9 @@ void swap(Base& a,Base& b){
 };
 
 int main(){
+    int n=0;
+
+    cout << "----------------------------------" << n++ << endl;
 
     Base a(7, "ciao");
     a = Base(8, "hello");
@@ -144,5 +147,16 @@ int main(){
         Base b{9,"hola"};
         a=b;
     }
+
+    cout << "----------------------------------" << n++ << endl;
+
+    Base c(7, "ciao");
+    c = Base(8, "hello");
+
+    {
+        Base d{9,"hola"};
+        c=std::move(d);
+    }
+
 };
 

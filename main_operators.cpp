@@ -156,6 +156,7 @@ int main(){
 
 
     cout << "---------- " << ++test << endl;
+    cout.width(20);
     cout << b7 << endl;
 
 };

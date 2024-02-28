@@ -29,7 +29,6 @@ add_executable(main_operators main_operators.cpp)
 add_executable(main_theory main_theory.cpp)
 add_executable(main_tricks main_tricks.cpp)
 
-add_executable(main_io main_io.cpp)
 add_executable(main_threadpooling main_threadpooling.cpp)
 
 
