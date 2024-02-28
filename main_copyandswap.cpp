@@ -116,7 +116,7 @@ public:
     }
 
     Base& operator=(Base o){ //questo passaggio per valore puo avvenire per copia o movimento.
-        swap(*this,o); //in caso di copia, this è l'oggetto sovrascritto dal movimento dei dati presi da "o" che sarà poi distrutto.
+        swap(*this,o); //in caso di copia, this è l'oggetto sovrascritto dallo scambio dei dati presi da "o" che sarà poi distrutto.
         return *this;
     }
 
