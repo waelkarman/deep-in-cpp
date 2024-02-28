@@ -60,34 +60,44 @@ int counter = 0;
 
 
 void producer() {
-    std::unique_lock<std::mutex> lock(mtx); // Acquisisce il lock sul mutex
+    while(true){
+        std::unique_lock<std::mutex> lock(mtx); // Acquisisce il lock sul mutex
+        cout << "producer blocca il lock" << endl;
+        counter += 1;
+        lock.unlock();
+        cout << "producer sblocca il lock" << endl;
+        cv.notify_one(); // non sblocca il lock
 
-    counter += 1;
-    std::cout << "Producer ha inserito il dato: " << counter << std::endl;
-    cv.notify_one();
+        std::cout << "Producer ha inserito il dato: " << counter << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(8));
+    }
 }
 
 void consumer() {
-    std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(lock, []{
-        if(counter>0){
-            cout<<"SI"<<endl;
-            return true;
-        }else{
-            cout<<"NO"<<endl;
-            return false;
-        }
-    }); // Verifica la condizione di consumo
+    while(true){
+        std::unique_lock<std::mutex> lock(mtx);
+        cout << "consumer blocca il lock" << endl;
+        cv.wait(lock, []{ //wait sblocca il lock
+            cout << "consumer sblocca il lock" << endl;
+            if(counter>0){
+                cout<<"consumer proceed"<<endl;
+                return true;
+            }else{
+                cout<<"consumer stop"<<endl;
+                return false;
+            }
+        }); // Verifica la condizione di consumo
 
-    std::cout << "Consumer ha consumato il dato: " << counter << std::endl;
-    counter = 0;
+        std::cout << "Consumer ha consumato il dato: " << counter << std::endl;
+        counter--;
+    }
 }
 
 int main() {
     std::thread t1(consumer); // il consumer resta in attesa nei prossimo 8 secondi finche un dato non è dispomnibile
-    std::this_thread::sleep_for(std::chrono::seconds(8));
     std::thread t2(producer);
-
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     t1.join();
     t2.join();
 
