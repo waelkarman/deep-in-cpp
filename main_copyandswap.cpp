@@ -129,7 +129,7 @@ public:
     ~Base(){}
 };
 
-void swap(Base& a,Base& b){
+void swap(Base& a,Base& b){ //la funzione swao NON dovrebbe generare eccezioni che sono il principale problema che affligge copia e movimento.
     std::swap(a.i, b.i);
     std::swap(a.s, b.s);
     std::swap(a.si, b.si);
