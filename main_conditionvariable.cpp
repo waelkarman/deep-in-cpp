@@ -46,7 +46,19 @@ per indicare tempo esaurito o sveglio per notifiy
 le condition_variable possono ritardare la notifia alla morte del thread
 notify_all_at_thread_exit()
 
-Non ha senso mettere il tutto in un while perchè si trasforma tutto in pooling cosa che si cerca di evitare.
+----------------
+
+Quando usi una std::condition_variable per sincronizzare thread, l'ordine tipico delle operazioni in un thread che notifica è:
+
+1.Acquisire il lock su un mutex (tramite std::unique_lock o altro meccanismo di locking).
+2.Modificare lo stato o la condizione che sarà controllata dai thread in attesa.
+3.Chiamare notify_one() o notify_all() sulla condition_variable per risvegliare uno o più thread in attesa.
+4.Rilasciare il lock, che può avvenire esplicitamente tramite unlock() sul std::unique_lock o implicitamente lasciando che il std::unique_lock venga distrutto (uscendo dal suo scope).
+
+Perché non è necessariamente richiesto sbloccare prima di notificare?
+
+!) Quando chiami notify_one() o notify_all(), i thread che sono stati notificati tenteranno di ri-acquisire il lock sul mutex prima di procedere. Se il lock non viene rilasciato prima della chiamata di notifica, questi thread semplicemente si metteranno in attesa del rilascio del lock prima di continuare. Non si "perde" la notifica; piuttosto, c'è un ritardo nell'effetto della notifica fino a quando il lock non viene rilasciato.
+-)In alcuni casi, può essere desiderabile mantenere il lock durante la notifica per evitare "race conditions" dove un altro thread potrebbe intervenire e modificare lo stato prima che il thread notificato abbia la possibilità di agire sulla condizione aggiornata.
 
 */
 
@@ -64,9 +76,10 @@ void producer() {
         std::unique_lock<std::mutex> lock(mtx); // Acquisisce il lock sul mutex
         cout << "producer blocca il lock" << endl;
         counter += 1;
+
+        cv.notify_one(); // non sblocca il lock
         lock.unlock();
         cout << "producer sblocca il lock" << endl;
-        cv.notify_one(); // non sblocca il lock
 
         std::cout << "Producer ha inserito il dato: " << counter << std::endl;
 
