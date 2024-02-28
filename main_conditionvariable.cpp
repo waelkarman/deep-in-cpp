@@ -78,7 +78,7 @@ void producer() {
         counter += 1;
 
         cv.notify_one(); // non sblocca il lock
-        lock.unlock();
+        lock.unlock(); // !) leggi sopra
         cout << "producer sblocca il lock" << endl;
 
         std::cout << "Producer ha inserito il dato: " << counter << std::endl;
