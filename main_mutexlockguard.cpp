@@ -60,7 +60,7 @@ public:
 
 void incr(prod_cons& p,int n){
     for(int i = 0 ; i < 100 ; i++){
-        p.increase(2);
+        p.increase(n);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         //std::this_thread::yield();
     }

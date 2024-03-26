@@ -83,7 +83,7 @@ void producer() {
 
         std::cout << "Producer ha inserito il dato: " << counter << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::seconds(8));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 }
 
