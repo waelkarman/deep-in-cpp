@@ -22,7 +22,7 @@ la chiamata di unlock è sempre a carico del programmatore anche se il codice si
 il mutex non ha ancuna corrispondenza con quanto protegge è tutto a carico del programmatore e quindi va documentata bene
 il mutex serve in lettura e scrittura perche se no potrei leggere scritture parziali che sono fatte al contempo
 
-se chiamo due volte lock() attendo per sempre perche davanti ad un lock non rilasciato si attende che qualcuno lo rilasci ma se a doverlo
+se chiamo due volte lock() di un mutex normale attendo per sempre perche davanti ad un lock non rilasciato si attende che qualcuno lo rilasci ma se a doverlo
 rilasciare
 sono io che sono bloccato nell attesa questo non avverrà mai -> deadlock
 
@@ -31,8 +31,8 @@ esiste anche un metodo try_lock che ritorna un booleano evitando di rimanere blo
 
 è molto raro usare lock su un mutex direttamnete, in genere dal mutex si crea un oggetto std::lock_guard<lockable> prende un mutex in ingresso
 il lock_guard è un oggetto che ha un lock nel costruttore e un unlock nel distruttore nel caso un eccezione avvenga nel blocco loccato la
-contrazione dello stack fa sbloccare il mutex. se si costruisce questo oggetto lock_guard in un metodo si assicura che quando la graffa del
-metodo sarà chiusa il lock sarà rilasciato quindi paradigma RAII reg12 1:23:16
+contrazione dello  stack fa sbloccare il mutex. se si costruisce questo oggetto lock_guard in un metodo si assicura che quando la graffa del
+metodo sarà chiusa il lock sarà rilasciato quindi paradigma RAII reg121:23:16
 se definisco un mutex dentro una classe per quell oggetto userò sempre lo stesso mutex anche se passo l oggetto a piu thread
 */
 
