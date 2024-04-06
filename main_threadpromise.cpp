@@ -125,7 +125,7 @@ int main() {
     t2.detach();
 
 
-    //-----------------------------------ERRORS
+    //-----------------------------------ERRORS - Accesso a memoria gia liberata !
 
     int* i = (int*)malloc(sizeof(int));
     *i=1000;
