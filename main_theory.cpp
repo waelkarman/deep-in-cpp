@@ -151,8 +151,6 @@ int main()
 
     //classe che eredita da una sola classe base avrà una sola vtable
 
-    cout << "PROGRAMMAZIONE CONCORRENTE" << endl;
-
     // IO << <<
     // costruttore di copia
     // ridefinizione degli operatori
@@ -160,19 +158,6 @@ int main()
     // il tipo void
     // qualcosa in piu sulla vtable magari dal libro
     //se il costruttore di copia e l operatore di assegnazione sono privati la copia non si fa.
-
-    //SOLID
-
-
-
-
-    //ACID
-
-
-
-
-
-    //REST
 
 
 
