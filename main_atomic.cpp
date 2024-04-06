@@ -1,5 +1,7 @@
+#include <atomic>
 #include <iostream>
-
+#include <thread>
+#include <vector>
 using namespace std;
 
 /*
@@ -13,7 +15,29 @@ exchange
 atomic ha gia specializzazioni per interio boolean o comunque tipi piccoli
 */
 
+// Un contatore atomico condiviso tra i thread
+std::atomic<int> counter(0);
 
-int main(){
-    cout << "HI" << endl;
+void incrementCounter() {
+    for (int i = 0; i < 100; ++i) {
+        // Incrementa il contatore atomicamente
+        int original_value = counter.fetch_add(1);
+        cout << "This print is not sinchronized: "<< original_value << endl;
+    }
+}
+
+int main() {
+    const int numThreads = 10;
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < numThreads; ++i) {
+        threads.emplace_back(incrementCounter);
+    }
+
+    for (auto& th : threads) {
+        th.join();
+    }
+
+    std::cout << "Counter   : " << counter.load() << std::endl;
+    return 0;
 }
