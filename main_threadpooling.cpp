@@ -3,7 +3,6 @@
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <condition_variable>
 #include <random>
 #include <atomic>
 
@@ -52,11 +51,9 @@ pool utilizzando le primitive di concorrenza fornite da C++11 (come std::thread,
  *
 */
 
-std::mutex mtx;
-std::condition_variable cv;
-bool ready = false;
 std::mutex queue_mutex;
 std::atomic<int> i(0);
+std::atomic<int> k(0);
 
 
 unsigned long long fibonacci_recursive(int n) {
@@ -64,8 +61,8 @@ unsigned long long fibonacci_recursive(int n) {
     return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2);
 }
 
-void th_lodable(int k, vector<std::function<void(int)>> & tasks){
-    std::function<void(int)> f;
+void th_lodable(vector<std::function<void()>> & tasks){
+    std::function<void()> f;
     {
         std::lock_guard<std::mutex> lock(queue_mutex);
         if (tasks.empty()){
@@ -74,7 +71,7 @@ void th_lodable(int k, vector<std::function<void(int)>> & tasks){
         f = tasks.back();
         tasks.pop_back();
     }
-    f(k);
+    f();
     i--;
 }
 
@@ -83,7 +80,7 @@ int main() {
     std::cout << "Total available Cores: " << n << endl;
 
     vector<thread> workers;
-    vector<std::function<void(int)>> tasks;
+    vector<std::function<void()>> tasks;
 
 
     std::random_device rd;
@@ -92,19 +89,18 @@ int main() {
 
     for(int q=0; q<100; q++){
         int fib = distrib(gen);
-        std::function<void(int)> task = [=](int k){
-            cout << "execute task " << q << "on thread num: "<< k << endl;
+        std::function<void()> task = [=](){
+            cout << "execute task " << q << " on thread num: "<< k.fetch_add(1) << endl;
             fibonacci_recursive(fib);
         };
 
         tasks.push_back(std::move(task));
     }
 
-    int k(0);
+
     while(tasks.size()>0){
         while(tasks.size()>0 && i<n){
-            k++;
-            workers.push_back(thread(th_lodable,k,std::ref(tasks)));
+            workers.push_back(thread(th_lodable,std::ref(tasks)));
             i++;
         }
     }
