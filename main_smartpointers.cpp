@@ -99,14 +99,41 @@ public:
 
 int main(){
 
+    cout << "--> Problema di circolarità dello shared_ptr il contatore non raggiungerà mai lo zero nel primo caso:" << endl;
+    {
+        std::shared_ptr<Base0> pb0;
+        std::shared_ptr<Base1> pb1;
+        {
+            pb0 = std::make_shared<Base0>();
+            pb1 = std::make_shared<Base1>();
+            pb0->p1=pb1;
+            pb1->p0=pb0;
+        }
+        cout << "contatori non decrementabili: " <<  "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
+    }
+
+    {//SOLUTION
+        std::shared_ptr<Base0> pb0;
+        std::shared_ptr<Base1> pb1;
+        {
+            pb0 = std::make_shared<Base0>();
+            pb1 = std::make_shared<Base1>();
+            pb0->w1=pb1;
+            pb1->p0=pb0;
+        }
+        cout << "contatori decrementabili: " << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
+    }
+
+
+    cout << "-------------------------------------" << endl;
     //  ------------ SHARED AND WEAK
 
     //Osservo come il contatore dello smart_ptr sale e scende
     shared_ptr<Base0> p0;
     {
-        p0 = shared_ptr<Base0>(new Base0());
+        p0 = make_shared<Base0>();
 
-        cout << "Il puntatore è l' unico proprietario? " << p0.unique() << endl;
+        cout << "Il puntatore è l' unico proprietario? " << p0.unique() << endl; // (!=0) = true
 
         shared_ptr<Base0> p2=p0;
 
@@ -115,21 +142,25 @@ int main(){
             p3=p0;
             cout << "Il puntatore ha " << p0.use_count() << " riferimento" <<endl;
         }
-
         cout << "Il puntatore ha " << p0.use_count() << " riferimento" <<endl;
-        cout << "Il puntatore è l' unico proprietario? " << p0.unique() << endl;
+
+        cout << "Il puntatore è l' unico proprietario? " << p0.unique() << endl; // (!=0) = true
 
         cout << "Accedo all oggetto: " << p0->a << endl;
         cout << "Accedo all oggetto: " << (*p0).a << endl;
     }
 
-    cout << "Il puntatore ha " << p0.use_count() << " riferimento che sarà cancellato all uscita dallo scope." <<endl;
+    cout << "Il puntatore ha " << p0.use_count() << " riferimento vuoto che sarà cancellato all uscita dallo scope." <<endl;
 
 
-    //Alloco sullo heap un intero passando al metodo make_shared gli argomenti per costruire il tipo in parentesi angolari.
+
+    cout << "-------------------------------------" << endl;
+
+
+    //ERRORATO Alloco sullo heap un intero passando al metodo make_shared gli argomenti per costruire il tipo in parentesi angolari.
     {
         int c;
-        shared_ptr<int> p5 = make_shared<int>(c);
+        shared_ptr<int> p5 = make_shared<int>(c); //ERROR!
         shared_ptr<int> p6 = make_shared<int>(10);
         cout << "Modo errato di usare un sh_ptr: " << *p5 << endl;
         *p6 = 9;
@@ -145,24 +176,6 @@ int main(){
     //    int* pc=&c;
     //    shared_ptr<int> p5 = shared_ptr<int>(pc);
     //}//ERRORE
-
-
-    //Problema di circolarità dello shared_ptr il contatore non raggiungerà mai lo zero
-    {
-        std::shared_ptr<Base0> pb0 = std::make_shared<Base0>();
-        std::shared_ptr<Base1> pb1 = std::make_shared<Base1>();
-        pb0->p1=pb1;
-        pb1->p0=pb0;
-        cout << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
-    }
-
-    {//SOLUTION
-        std::shared_ptr<Base0> pb0 = std::make_shared<Base0>();
-        std::shared_ptr<Base1> pb1 = std::make_shared<Base1>();
-        pb0->w1=pb1;
-        pb1->p0=pb0;
-        cout << "pb0_count: " <<pb0.use_count() << " pb1_count: " <<pb1.use_count()<<endl;
-    }
 
     //  ------------ UNIQUE
     std::unique_ptr<Base0> u0 = std::make_unique<Base0>();
