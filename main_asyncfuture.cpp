@@ -45,6 +45,9 @@ la barriera e quindi la sincronizzazione è costosa e rallenta l' esecuzione. in
  -sfence store fence nessuno scrive piu finche non si sincronizza qunato scritto
  -lfence load fence nessuno legge finche non viene sincromnizzata la lettura
 
+-> troppi process abbattono le prestazioni per i troppi cambi di contesto - thrashing
+-> memory fence in assembly
+
 processori e compilatori possono fare la speculative processing ovvero possono scambiare le istruzioni che non cambiano
 nulla dal punto di vista del programma tipo 2 scritture consecutive indipendenti.
 
